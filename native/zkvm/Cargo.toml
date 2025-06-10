@@ -10,8 +10,5 @@ crate-type = ["cdylib"]
 
 [dependencies]
 rustler = "0.36.2"
-# risc0-zkvm = { version = "^2.1.0" }
-# tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-# serde = "1.0"
-
+aarm_core = { path = "/Users/christophe/Documents/Work/aarm-risc0/aarm_core" }
 lib = { path = "/Users/christophe/Documents/Code/rust/zkvm/zk-vm/root_project/native/lib" }

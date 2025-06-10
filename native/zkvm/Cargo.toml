@@ -10,7 +10,8 @@ crate-type = ["cdylib"]
 
 [dependencies]
 rustler = "0.36.2"
+# risc0-zkvm = { version = "^2.1.0" }
+# tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+# serde = "1.0"
 
-risc0-zkvm = { version = "^2.1.0" }
-tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-serde = "1.0"
+lib = { path = "/Users/christophe/Documents/Code/rust/zkvm/zk-vm/root_project/native/lib" }

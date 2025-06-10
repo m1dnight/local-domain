@@ -1,7 +1,0 @@
-[package]
-name = "testcrate"
-version = "0.1.0"
-edition = "2021"
-
-[dependencies]
-host = { version = "0.1.0", path = "../host" }

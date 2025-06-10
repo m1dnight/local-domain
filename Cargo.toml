@@ -3,8 +3,9 @@ resolver = "2"
 
 members = [
   "native/rzjson",
-  "native/secure-json"
-]
+  "native/host",
+  "native/methods"
+, "native/testcrate"]
 
 # Always optimize; building and running the guest takes much longer without optimization.
 [profile.dev]

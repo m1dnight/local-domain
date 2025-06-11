@@ -12,3 +12,5 @@ crate-type = ["cdylib"]
 rustler = "0.36.2"
 aarm_core = { path = "/Users/christophe/Documents/Work/aarm-risc0/aarm_core" }
 lib = { path = "/Users/christophe/Documents/Code/rust/zkvm/zk-vm/root_project/native/lib" }
+risc0-zkvm = { version = "2.0.2", features = ["prove", "std", "unstable"] }
+serde = { version = "1.0.197", default-features = false }

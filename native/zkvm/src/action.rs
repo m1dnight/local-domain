@@ -24,6 +24,7 @@ pub struct Action {
     pub resource_forwarder_calldata_pairs: Vec<(Resource, ForwarderCalldata)>,
 }
 
+
 #[derive(Clone, Debug, Deserialize, Serialize)]
 pub struct ForwarderCalldata {
     pub untrusted_forwarder: [u8; 20],

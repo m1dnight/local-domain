@@ -4434,7 +4434,9 @@ version = "0.1.0"
 dependencies = [
  "aarm_core",
  "lib",
+ "risc0-zkvm",
  "rustler",
+ "serde",
 ]
 
 [[package]]

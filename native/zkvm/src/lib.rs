@@ -1,8 +1,17 @@
 use crate::prover::generate_proof;
 use crate::prover::verify_proof;
-use risc0_zkvm::{default_prover, ExecutorEnv, Receipt};
+use risc0_zkvm::Receipt;
 use rustler;
 use serde::{Deserialize, Serialize};
+
+use risc0_zkvm::sha::Digest;
+
+pub mod action;
+pub mod constants;
+pub mod logic_proof;
+pub mod transaction;
+pub mod utils;
+
 mod prover;
 
 //----------------------------------------------------------------------------//
@@ -39,6 +48,12 @@ pub struct ForwarderCalldata {
     pub output: Vec<u8>,
 }
 
+#[derive(Clone, Debug, Default, serde::Serialize, serde::Deserialize, rustler::NifStruct)]
+#[module = "Elixir.Zkvm.ComplianceInstance"]
+pub struct ComplianceInstance {
+    pub consumed_nullifier: Digest,
+}
+
 //----------------------------------------------------------------------------//
 //                                Action                                      //
 //----------------------------------------------------------------------------//
@@ -64,6 +79,11 @@ pub struct ForwarderCalldata {
 //----------------------------------------------------------------------------//
 
 #[rustler::nif]
+fn testfunc() -> u64 {
+    1
+}
+
+#[rustler::nif]
 fn prove(a: u64, b: u64) -> String {
     println!("params: {}, {}", a, b);
     let (receipt, _number): (Receipt, u64) = generate_proof(a, b);
@@ -82,7 +102,6 @@ fn verify(receipt: String) -> bool {
             return false;
         }
     }
-
 }
 
 rustler::init!("Elixir.Zkvm");

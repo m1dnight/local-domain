@@ -5,6 +5,7 @@ use rustler;
 use serde::{Deserialize, Serialize};
 
 use risc0_zkvm::sha::Digest;
+use rustler::{Encoder, Decoder, Env, Term, NifResult, Error};
 
 pub mod action;
 pub mod constants;
@@ -13,6 +14,35 @@ pub mod transaction;
 pub mod utils;
 
 mod prover;
+
+#[derive(Clone, Debug, Default, serde::Serialize, serde::Deserialize)]
+pub struct TestInternal {
+    pub consumed_nullifier: Digest,
+}
+
+#[derive(Clone, Debug, Default, serde::Serialize, serde::Deserialize, rustler::NifStruct)]
+#[module = "Elixir.Zkvm.Test"]
+pub struct TestWrapper(pub TestInternal);
+
+impl Encoder for TestWrapper {
+    fn encode<'a>(&self, env: Env<'a>) -> Term<'a> {
+        self.0.consumed_nullifier.as_bytes().encode(env)
+    }
+}
+
+impl<'a> Decoder<'a> for TestWrapper {
+    fn decode(term: Term<'a>) -> NifResult<Self> {
+        let bytes: Vec<u8> = Decoder::decode(term)?;
+        if bytes.len() != 32 {
+            return Err(Error::BadArg);
+        }
+        let mut array = [0u8; 32];
+        array.copy_from_slice(&bytes);
+        Ok(TestWrapper(TestInternal {
+            consumed_nullifier: Digest::from(array),
+        }))
+    }
+}
 
 //----------------------------------------------------------------------------//
 //                                Logic Proof                                 //
@@ -40,7 +70,7 @@ mod prover;
 //                                Forwarder Call Data                         //
 //----------------------------------------------------------------------------//
 
-#[derive(Clone, Debug, Deserialize, Serialize, rustler::NifStruct)]
+#[derive(Clone, Debug, rustler::NifStruct)]
 #[module = "Elixir.Zkvm.ForwarderCalldata"]
 pub struct ForwarderCalldata {
     pub untrusted_forwarder: Vec<u8>,
@@ -48,11 +78,6 @@ pub struct ForwarderCalldata {
     pub output: Vec<u8>,
 }
 
-#[derive(Clone, Debug, Default, serde::Serialize, serde::Deserialize, rustler::NifStruct)]
-#[module = "Elixir.Zkvm.ComplianceInstance"]
-pub struct ComplianceInstance {
-    pub consumed_nullifier: Digest,
-}
 
 //----------------------------------------------------------------------------//
 //                                Action                                      //

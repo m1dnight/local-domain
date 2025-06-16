@@ -22,7 +22,9 @@ pub struct TestInternal {
 
 #[derive(Clone, Debug, Default, serde::Serialize, serde::Deserialize, rustler::NifStruct)]
 #[module = "Elixir.Zkvm.Test"]
-pub struct TestWrapper(pub TestInternal);
+pub struct TestWrapper {
+    pub TestInternal test_internal;
+};
 
 impl Encoder for TestWrapper {
     fn encode<'a>(&self, env: Env<'a>) -> Term<'a> {

@@ -2,10 +2,8 @@ use crate::prover::generate_proof;
 use crate::prover::verify_proof;
 use risc0_zkvm::Receipt;
 use rustler;
-use serde::{Deserialize, Serialize};
 
 use risc0_zkvm::sha::Digest;
-use rustler::{Encoder, Decoder, Env, Term, NifResult, Error};
 
 pub mod action;
 pub mod constants;
@@ -15,36 +13,39 @@ pub mod utils;
 
 mod prover;
 
+
 #[derive(Clone, Debug, Default, serde::Serialize, serde::Deserialize)]
-pub struct TestInternal {
+pub struct ComplianceInstance {
     pub consumed_nullifier: Digest,
 }
 
-#[derive(Clone, Debug, Default, serde::Serialize, serde::Deserialize, rustler::NifStruct)]
-#[module = "Elixir.Zkvm.Test"]
-pub struct TestWrapper {
-    pub TestInternal test_internal;
-};
-
-impl Encoder for TestWrapper {
-    fn encode<'a>(&self, env: Env<'a>) -> Term<'a> {
-        self.0.consumed_nullifier.as_bytes().encode(env)
-    }
+#[derive(Clone, Debug, Default, serde::Serialize, serde::Deserialize)]
+// #[module = "Elixir.Zkvm.ComplianceInstance"]
+pub struct ComplianceInstanceWrapper {
+    pub compliance_instance : ComplianceInstance,
 }
 
-impl<'a> Decoder<'a> for TestWrapper {
-    fn decode(term: Term<'a>) -> NifResult<Self> {
-        let bytes: Vec<u8> = Decoder::decode(term)?;
-        if bytes.len() != 32 {
-            return Err(Error::BadArg);
-        }
-        let mut array = [0u8; 32];
-        array.copy_from_slice(&bytes);
-        Ok(TestWrapper(TestInternal {
-            consumed_nullifier: Digest::from(array),
-        }))
-    }
-}
+// impl Encoder for TestWrapper {
+//     fn encode<'a>(&self, env: Env<'a>) -> Term<'a> {
+//         self.test_internal.consumed_nullifier.as_bytes().encode(env)
+//     }
+// }
+
+// impl<'a> Decoder<'a> for TestWrapper {
+//     fn decode(term: Term<'a>) -> NifResult<Self> {
+//         let bytes: Vec<u8> = Decoder::decode(term)?;
+//         if bytes.len() != 32 {
+//             return Err(Error::BadArg);
+//         }
+//         let mut array = [0u8; 32];
+//         array.copy_from_slice(&bytes);
+//         Ok(TestWrapper {
+//             test_internal: TestInternal {
+//                 consumed_nullifier: Digest::from(array),
+//             },
+//         })
+//     }
+// }
 
 //----------------------------------------------------------------------------//
 //                                Logic Proof                                 //

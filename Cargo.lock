@@ -3,6 +3,18 @@
 version = 4
 
 [[package]]
+name = "aarm"
+version = "0.1.0"
+dependencies = [
+ "aarm_core",
+ "k256",
+ "rand 0.8.5",
+ "risc0-zkvm",
+ "rustler",
+ "serde",
+]
+
+[[package]]
 name = "aarm_core"
 version = "0.1.0"
 dependencies = [
@@ -4412,6 +4424,7 @@ dependencies = [
 name = "zkvm"
 version = "0.1.0"
 dependencies = [
+ "aarm",
  "aarm_core",
  "k256",
  "rand 0.8.5",

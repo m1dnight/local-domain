@@ -3,7 +3,7 @@ use crate::prover::verify_proof;
 use risc0_zkvm::Receipt;
 use rustler;
 
-use rustler::{nif, Decoder};
+use rustler::{nif};
 
 mod prover;
 

@@ -25,26 +25,50 @@ struct ResourceP {
 
 impl<'a> Decoder<'a> for ResourceP {
     fn decode(term: Term<'a>) -> NifResult<Self> {
-        // For decoding from a map/keyword list
-        let map = term.decode::<std::collections::HashMap<String, Term>>()?;
+        // fetch the name field
+        let name  = term.map_get(Atom::from_str(term.get_env(), "name")?)?.decode::<u64>()?;
+        println!("name");
 
-        let name = map.get("name").ok_or(Error::BadArg)?.decode::<u64>()?;
+        // fetch the digest bytes
+        let binary = term.map_get(Atom::from_str(term.get_env(), "untrusted_forwarder")?);
+        match binary {
+            Ok(bin) => {
+                println!("term {:?}", bin);
+                println!("bytes {}", DIGEST_BYTES);
+                let binn = Binary::from_term(bin);
+                match binn {
+                    Ok(binn) => {
+                        println!("binn");
+                        let vec = binn.to_vec();
+                        println!("vec {}", vec.iter().count());
+                        println!("binn");
+                        let arr : [u8; DIGEST_BYTES] = vec.try_into().unwrap();
+                        println!("binn");
+                        println!("arr {:?}", arr);
+                        let digest = Digest::from_bytes(arr);
+                        println!("digest");
+                    }
+                    Err(err) => {
+                        println!("err {:?}", err);
+                    }
 
-        let hash: Vec<u8> = map
-            .get("hash")
-            .ok_or(Error::BadArg)?
-            .decode::<Binary>()?
-            .to_vec();
-        let digest: Digest = hash.try_into().expect("Vec must be exactly 8 bytes");
+                }
+                println!("words {}", DIGEST_WORDS);
+                // let vec = binn.to_vec();
+                // println!("vec {}", vec.iter().count());
+                // let arr : [u8; DIGEST_BYTES] = vec.try_into().unwrap();
+                //
+                // println!("{:?} binaryd!", arr);
 
-        //
-        // let age = map.get("age")
-        //     .ok_or(Error::BadArg)?
-        //     .decode::<i32>()?;
-        //
-        // let active = map.get("active")
-        //     .ok_or(Error::BadArg)?
-        //     .decode::<bool>()?;
+            }
+            Err(_) => {println!("error!");}
+        };
+
+        let digest_binary : Binary  = Binary::from_term(binary?)?;
+        let digest_bytes: Vec<u8> = digest_binary.to_vec();
+        let digest_arr : [u8; DIGEST_BYTES] = digest_bytes.try_into().unwrap();
+        println!("digest_arr {:?}", digest_arr);
+        let digest = Digest::from_bytes(digest_arr);
 
         Ok(ResourceP {
             name: name,
@@ -68,7 +92,13 @@ impl Encoder for ResourceP {
         let digest_bytes = digest.as_bytes();
         let mut digest_bin = OwnedBinary::new(DIGEST_BYTES).expect("allocation failed");
         digest_bin.as_mut_slice().write_all(&digest_bytes).unwrap();
-        let map = map.map_put(Atom::from_str(env, "untrusted_forwarder").unwrap(), self.hash.as_words()).unwrap();
+        let bin = Binary::from_owned(digest_bin, env);
+        let map = map
+            .map_put(
+                Atom::from_str(env, "untrusted_forwarder").unwrap(),
+                bin,
+            )
+            .unwrap();
 
         // store the struct name
         let map = map
@@ -88,9 +118,15 @@ impl Encoder for ResourceP {
 
 #[nif]
 fn testfunc() -> ResourceP {
-    let resource = ResourceP { name: 123 };
+    ResourceP {
+        name: 123,
+        hash: Digest::default(),
+    }
+}
 
-    resource.en
+#[nif]
+fn echofunc(resource_p: ResourceP) -> ResourceP {
+    resource_p
 }
 
 #[nif]
@@ -115,3 +151,17 @@ fn verify(receipt: String) -> bool {
 }
 
 rustler::init!("Elixir.Anoma.Zkvm");
+
+mod tests {
+    use crate::ResourceP;
+    use risc0_zkvm::Digest;
+    use rustler::{Encoder, Env};
+
+    #[test]
+    fn test_from_hex() {
+        let r = ResourceP {
+            name: 123,
+            hash: Digest::default(),
+        };
+    }
+}

@@ -12,7 +12,6 @@ use k256::{
     EncodedPoint, ProjectivePoint, Scalar,
 };
 use risc0_zkvm::sha::{Digest, Impl, Sha256};
-use rustler::NifStruct;
 
 #[derive(Clone, Debug, Default, serde::Serialize, serde::Deserialize)]
 pub struct ComplianceInstance {

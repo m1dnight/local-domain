@@ -4,34 +4,32 @@ use risc0_zkvm::Receipt;
 use rustler;
 
 use risc0_zkvm::sha::Digest;
-
-pub mod action;
-pub mod constants;
-pub mod logic_proof;
-pub mod transaction;
-pub mod utils;
+use rustler::{nif, Decoder, Encoder, Env, Error, NifResult, NifStruct, Term};
 
 mod prover;
 
+// #[derive(Clone, Debug, Default, serde::Serialize, serde::Deserialize)]
+// pub struct ComplianceInstance {
+//     pub consumed_nullifier: Digest,
+// }
 
-#[derive(Clone, Debug, Default, serde::Serialize, serde::Deserialize)]
-pub struct ComplianceInstance {
-    pub consumed_nullifier: Digest,
-}
+//----------------------------------------------------------------------------//
+//                                Compliance Wrapper                          //
+//----------------------------------------------------------------------------//
 
-#[derive(Clone, Debug, Default, serde::Serialize, serde::Deserialize)]
+// #[derive(NifStruct)]
 // #[module = "Elixir.Zkvm.ComplianceInstance"]
-pub struct ComplianceInstanceWrapper {
-    pub compliance_instance : ComplianceInstance,
-}
+// pub struct ComplianceInstanceWrapper {
+//     pub compliance_instance: ComplianceInstanceOther,
+// }
 
-// impl Encoder for TestWrapper {
+// impl Encoder for ComplianceInstanceWrapper {
 //     fn encode<'a>(&self, env: Env<'a>) -> Term<'a> {
-//         self.test_internal.consumed_nullifier.as_bytes().encode(env)
+//         self.compliance_instance.consumed_nullifier.as_bytes().encode(env)
 //     }
 // }
 
-// impl<'a> Decoder<'a> for TestWrapper {
+// impl<'a> Decoder<'a> for ComplianceInstanceWrapper {
 //     fn decode(term: Term<'a>) -> NifResult<Self> {
 //         let bytes: Vec<u8> = Decoder::decode(term)?;
 //         if bytes.len() != 32 {
@@ -39,10 +37,10 @@ pub struct ComplianceInstanceWrapper {
 //         }
 //         let mut array = [0u8; 32];
 //         array.copy_from_slice(&bytes);
-//         Ok(TestWrapper {
-//             test_internal: TestInternal {
-//                 consumed_nullifier: Digest::from(array),
-//             },
+//         Ok(ComplianceInstanceWrapper {
+//             compliance_instance: ComplianceInstanceOther{
+//                 consumed_nullifier: Digest::from(array)
+//             }
 //         })
 //     }
 // }
@@ -73,14 +71,13 @@ pub struct ComplianceInstanceWrapper {
 //                                Forwarder Call Data                         //
 //----------------------------------------------------------------------------//
 
-#[derive(Clone, Debug, rustler::NifStruct)]
-#[module = "Elixir.Zkvm.ForwarderCalldata"]
-pub struct ForwarderCalldata {
-    pub untrusted_forwarder: Vec<u8>,
-    pub input: Vec<u8>,
-    pub output: Vec<u8>,
-}
-
+// #[derive(Clone, Debug, NifStruct)]
+// #[module = "Elixir.Zkvm.ForwarderCalldata"]
+// pub struct ForwarderCalldata {
+//     pub untrusted_forwarder: Vec<u8>,
+//     pub input: Vec<u8>,
+//     pub output: Vec<u8>,
+// }
 
 //----------------------------------------------------------------------------//
 //                                Action                                      //
@@ -106,12 +103,12 @@ pub struct ForwarderCalldata {
 //                                Functions                                   //
 //----------------------------------------------------------------------------//
 
-#[rustler::nif]
-fn testfunc() -> u64 {
-    1
+#[nif]
+fn testfunc() -> u32 {
+    5
 }
 
-#[rustler::nif]
+#[nif]
 fn prove(a: u64, b: u64) -> String {
     println!("params: {}, {}", a, b);
     let (receipt, _number): (Receipt, u64) = generate_proof(a, b);
@@ -120,7 +117,7 @@ fn prove(a: u64, b: u64) -> String {
     serialized
 }
 
-#[rustler::nif]
+#[nif]
 fn verify(receipt: String) -> bool {
     match serde_json::from_str(&receipt) {
         Ok(r) => {

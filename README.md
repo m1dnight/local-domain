@@ -1,4 +1,4 @@
-# LocalDomain
+# AnomaSdk
 
 
 ## ZKVM Directory Structure

@@ -1,6 +1,6 @@
-defmodule LocalDomain do
+defmodule AnomaSdk do
   @moduledoc """
-  Documentation for `LocalDomain`.
+  Documentation for `AnomaSdk`.
   """
 
   @doc """
@@ -8,7 +8,7 @@ defmodule LocalDomain do
 
   ## Examples
 
-      iex> LocalDomain.hello()
+      iex> AnomaSdk.hello()
       :world
 
   """

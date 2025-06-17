@@ -1,9 +1,9 @@
-defmodule LocalDomain.MixProject do
+defmodule AnomaSdk.MixProject do
   use Mix.Project
 
   def project do
     [
-      app: :local_domain,
+      app: :anoma_sdk,
       version: "0.1.0",
       elixir: "~> 1.18",
       start_permanent: Mix.env() == :prod,

@@ -1,8 +1,8 @@
-defmodule LocalDomainTest do
+defmodule AnomaSdkTest do
   use ExUnit.Case
-  doctest LocalDomain
+  doctest AnomaSdk
 
   test "greets the world" do
-    assert LocalDomain.hello() == :world
+    assert AnomaSdk.hello() == :world
   end
 end

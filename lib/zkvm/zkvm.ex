@@ -1,13 +1,13 @@
 defmodule Zkvm do
   use Rustler,
-    otp_app: :local_domain,
+    otp_app: :anoma_sdk,
     crate: :zkvm
 
   defmodule ForwarderCalldata do
     defstruct [:untrusted_forwarder, :input, :output]
   end
 
-    defmodule Test do
+  defmodule ComplianceInstance do
     defstruct [:consumed_nullifier]
   end
 

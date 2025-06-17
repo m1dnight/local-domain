@@ -10,7 +10,6 @@ dependencies = [
  "k256",
  "rand 0.8.5",
  "risc0-zkvm",
- "rustler",
  "serde",
 ]
 
@@ -25,6 +24,7 @@ dependencies = [
  "lazy_static",
  "rand 0.8.5",
  "risc0-zkvm",
+ "rustler",
  "serde",
  "serde-big-array",
  "sha2",
